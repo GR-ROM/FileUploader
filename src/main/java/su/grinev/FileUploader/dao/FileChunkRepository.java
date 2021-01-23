@@ -41,7 +41,7 @@ public class FileChunkRepository {
 
     public FileChunk findByHash(int hash){
         synchronized (this.fileChunkMap) {
-            return fileChunkMap.values().stream().filter(t->t.getHashcode()==hash).findFirst().orElse(null);
+            return fileChunkMap.values().stream().filter(t -> t.getHashcode()==hash).findFirst().orElse(null);
         }
     }
 

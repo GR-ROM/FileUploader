@@ -2,6 +2,8 @@ package su.grinev.FileUploader.service;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import su.grinev.FileUploader.model.FileChunk;
 
 import java.io.*;
 
@@ -51,20 +53,27 @@ public class FileStorageService {
         return bytesCount;
     }
 
-    public void chunkedFileUpload(int fileId, long offset, long length, InputStream is) throws IOException {
+    public boolean validChunkHashcode(FileChunk fileChunk) throws FileNotFoundException {
+        InputStream is = new BufferedOutputStream(new FileOutputStream(tempFilesDirectory+"/"+fileChunk.getChunkId()+".part", true));
+    }
+
+    public void putChunkToFile(FileChunk fileChunk, MultipartFile chunkData) throws IOException {
         int bytesRead=0;
         byte[] buffer=new byte[256*1024];
-        BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(tempFilesDirectory+"/"+fileId+".part", true));
+        RandomAccessFile raf=new RandomAccessFile(tempFilesDirectory+"/"+fileChunk.getFileId()+".part", "rw");
+        raf.seek(fileChunk.getOffset());
+
+        InputStream is=chunkData.getInputStream();
         boolean uploaded = true;
         try {
             while ((bytesRead=is.read())!=-1){
-                out.write(buffer, 0, bytesRead);
+                raf.write(buffer, 0, bytesRead);
             }
         } catch (IOException e) {
             uploaded = false;
             System.err.println("io exception");
         } finally {
-            out.close();
+            raf.close();
         }
     }
 

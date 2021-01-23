@@ -53,7 +53,7 @@ public class FileMetadataRepository {
 
     public FileMetadata findByHash(String hash){
         synchronized (this.fileMetadata) {
-            return fileMetadata.values().stream().filter(t -> t.getHash().equalsIgnoreCase(hash)).findFirst().orElse(null);
+            return fileMetadata.values().stream().filter(l -> l.getHash().equalsIgnoreCase(hash)).findFirst().orElse(null);
         }
     }
 

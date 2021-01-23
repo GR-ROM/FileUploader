@@ -60,8 +60,10 @@ public class ChunkedFileUploader {
                                      MultipartFile file) throws IOException {
         if (request.getFileId()==null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         if (fileMetadataRepository.findById(request.getFileId())==null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        fileChunkRepository.save(new FileChunk(request));
+        FileChunk fileChunk=new FileChunk(request);
+        fileChunkRepository.save(fileChunk);
         // to do: put chunk to file
+        fileStorageService.putChunkToFile(fileChunk, file);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 }
