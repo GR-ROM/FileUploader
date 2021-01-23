@@ -19,8 +19,7 @@ import su.grinev.FileUploader.model.FileMetadata;
 import java.util.Map;
 import java.util.stream.Stream;
 import static org.assertj.core.api.Assert.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 public class FileMetadataRepositoryTest {
@@ -38,9 +37,13 @@ public class FileMetadataRepositoryTest {
     }
 
     @Test
+    void shouldHaveItem(){
+        assertNotNull(fileMetadataRepository.findById(1));
+    }
+
+    @Test
     void shouldFindByHash() throws Exception {
         fileMetadataRepository.save(testFileMetaData);
-        assertNotNull(fileMetadataRepository.getFileMetadata());
         assertEquals(fileMetadata, fileMetadataRepository.findByHash("hashtest"));
     }
 
@@ -48,7 +51,7 @@ public class FileMetadataRepositoryTest {
     public void setUp(){
         testFileMetaData=new FileMetadata(1, "hashtest", "test", 1000l, "test");
         fileMetadataRepository= Mockito.mock(FileMetadataRepository.class);
-        fileMetadataRepository.setFileMetadata(fileMetadata);
+        fileMetadataRepository.save(testFileMetaData);
     }
 /*
     public static Stream<Arguments> values(){

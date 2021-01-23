@@ -1,30 +1,46 @@
 package su.grinev.FileUploader.model;
 
-import java.time.LocalDateTime;
+import su.grinev.FileUploader.dto.FileChunkDto;
 
 public class FileChunk {
-
-    private int id;
-    private FileMetadata metadata;
+    private Integer chunkId;
+    private Integer fileId;
+    private Integer hashcode;
     private Long offset;
-    private int length;
-    private int chunkNo;
-    private LocalDateTime createdTime;
+    private Integer size;
+    private boolean validHashcode;
 
-    public int getId() {
-        return id;
+    public FileChunk(FileChunkDto fileChunkDto){
+        this.fileId=fileChunkDto.getFileId();
+        this.hashcode=fileChunkDto.getHashcode();
+        this.offset=fileChunkDto.getOffset();
+        this.size=fileChunkDto.getSize();
+        this.validHashcode=false;
+        this.chunkId=null;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public Integer getChunkId() {
+        return chunkId;
     }
 
-    public FileMetadata getMetadata() {
-        return metadata;
+    public void setChunkId(Integer chunkId) {
+        this.chunkId = chunkId;
     }
 
-    public void setMetadata(FileMetadata metadata) {
-        this.metadata = metadata;
+    public Integer getFileId() {
+        return fileId;
+    }
+
+    public void setFileId(Integer fileId) {
+        this.fileId = fileId;
+    }
+
+    public Integer getHashcode() {
+        return hashcode;
+    }
+
+    public void setHashcode(Integer hashcode) {
+        this.hashcode = hashcode;
     }
 
     public Long getOffset() {
@@ -35,27 +51,19 @@ public class FileChunk {
         this.offset = offset;
     }
 
-    public int getLength() {
-        return length;
+    public Integer getSize() {
+        return size;
     }
 
-    public void setLength(int length) {
-        this.length = length;
+    public void setSize(Integer size) {
+        this.size = size;
     }
 
-    public int getChunkNo() {
-        return chunkNo;
+    public boolean isValidHashcode() {
+        return validHashcode;
     }
 
-    public void setChunkNo(int chunkNo) {
-        this.chunkNo = chunkNo;
-    }
-
-    public LocalDateTime getCreatedTime() {
-        return createdTime;
-    }
-
-    public void setCreatedTime(LocalDateTime createdTime) {
-        this.createdTime = createdTime;
+    public void setValidHashcode(boolean validHashcode) {
+        this.validHashcode = validHashcode;
     }
 }

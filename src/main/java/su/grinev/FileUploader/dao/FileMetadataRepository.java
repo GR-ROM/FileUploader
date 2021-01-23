@@ -37,11 +37,12 @@ public class FileMetadataRepository {
         this.fileMetadata = fileMetadata;
     }
 
-    public int save(FileMetadata fileMetadata){
+    public void save(FileMetadata fileMetadata){
         synchronized (this.fileMetadata){
-            this.fileMetadata.put(++id, fileMetadata);
+            id++;
+            fileMetadata.setId(id);
+            this.fileMetadata.put(id, fileMetadata);
         }
-        return id;
     }
 
     public void update(FileMetadata fileMetadata){
@@ -53,6 +54,12 @@ public class FileMetadataRepository {
     public FileMetadata findByHash(String hash){
         synchronized (this.fileMetadata) {
             return fileMetadata.values().stream().filter(t -> t.getHash().equalsIgnoreCase(hash)).findFirst().orElse(null);
+        }
+    }
+
+    public List<FileMetadata> findAll(){
+        synchronized (this.fileMetadata) {
+            return new ArrayList<>(fileMetadata.values());
         }
     }
 
