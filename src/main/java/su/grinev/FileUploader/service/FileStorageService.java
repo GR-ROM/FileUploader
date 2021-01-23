@@ -54,7 +54,9 @@ public class FileStorageService {
     }
 
     public boolean validChunkHashcode(FileChunk fileChunk) throws FileNotFoundException {
-        InputStream is = new BufferedOutputStream(new FileOutputStream(tempFilesDirectory+"/"+fileChunk.getChunkId()+".part", true));
+        //InputStream is = new BufferedOutputStream(new FileOutputStream(tempFilesDirectory+"/"+fileChunk.getChunkId()+".part", true));
+        // TO DO: calcChunkHashcodeFromFile(...
+        return true;
     }
 
     public void putChunkToFile(FileChunk fileChunk, MultipartFile chunkData) throws IOException {
