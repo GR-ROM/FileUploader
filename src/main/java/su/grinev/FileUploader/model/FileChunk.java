@@ -2,13 +2,22 @@ package su.grinev.FileUploader.model;
 
 import su.grinev.FileUploader.dto.FileChunkDto;
 
-public class FileChunk {
+public class FileChunk{
     private Integer chunkId;
     private Integer fileId;
     private Integer hashcode;
     private Long offset;
     private Integer size;
     private boolean validHashcode;
+
+    public FileChunk(Integer fileId, Integer hashcode, Long offset, Integer size) {
+        this.fileId = fileId;
+        this.hashcode = hashcode;
+        this.offset = offset;
+        this.size = size;
+        this.validHashcode=false;
+        this.chunkId=null;
+    }
 
     public FileChunk(FileChunkDto fileChunkDto){
         this.fileId=fileChunkDto.getFileId();
@@ -66,4 +75,5 @@ public class FileChunk {
     public void setValidHashcode(boolean validHashcode) {
         this.validHashcode = validHashcode;
     }
+
 }

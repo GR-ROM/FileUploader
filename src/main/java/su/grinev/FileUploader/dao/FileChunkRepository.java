@@ -1,19 +1,23 @@
 package su.grinev.FileUploader.dao;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import su.grinev.FileUploader.model.FileChunk;
-import su.grinev.FileUploader.model.FileMetadata;
 
-import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Component
 public class FileChunkRepository {
 
     private int id;
-    @Autowired
     private Map<Integer, FileChunk> fileChunkMap;
+
+    public FileChunkRepository(){
+        id=0;
+        fileChunkMap=new HashMap<>();
+    }
 
     public int getId() {
         return id;

@@ -2,23 +2,17 @@ package su.grinev.FileUploader.dao;
 
 
 
-import org.assertj.core.api.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.provider.Arguments;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import su.grinev.FileUploader.model.FileMetadata;
+import su.grinev.FileUploader.jdbc.model.FileMetadata;
 
 import java.util.Map;
-import java.util.stream.Stream;
-import static org.assertj.core.api.Assert.*;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -44,12 +38,12 @@ public class FileMetadataRepositoryTest {
     @Test
     void shouldFindByHash() throws Exception {
         fileMetadataRepository.save(testFileMetaData);
-        assertEquals(fileMetadata, fileMetadataRepository.findByHash("hashtest"));
+        assertEquals(fileMetadata, fileMetadataRepository.findByHash(111));
     }
 
     @BeforeEach
     public void setUp(){
-        testFileMetaData=new FileMetadata(1, "hashtest", "test", 1000l, "test");
+        testFileMetaData=new FileMetadata(1, "test", "hashtest", 111, 1000l, 0);
         fileMetadataRepository= Mockito.mock(FileMetadataRepository.class);
         fileMetadataRepository.save(testFileMetaData);
     }

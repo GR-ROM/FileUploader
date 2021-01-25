@@ -8,17 +8,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import su.grinev.FileUploader.dao.FileChunkRepository;
 import su.grinev.FileUploader.dao.FileMetadataRepository;
-import su.grinev.FileUploader.dto.CreateFileResponse;
-import su.grinev.FileUploader.dto.FileChunkDto;
 import su.grinev.FileUploader.dto.FileMetadataDto;
-import su.grinev.FileUploader.dto.JsonResponse;
-import su.grinev.FileUploader.model.FileChunk;
-import su.grinev.FileUploader.model.FileMetadata;
+import su.grinev.FileUploader.jdbc.model.FileMetadata;
 import su.grinev.FileUploader.service.FileStorageService;
 import su.grinev.FileUploader.service.FileUploadServiceImpl;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @RestController
@@ -47,23 +41,35 @@ public class ChunkedFileUploader {
             method = RequestMethod.POST)
     public ResponseEntity createFile(@RequestBody FileMetadataDto request){
         if (request.getDisplayName()==null ||
-        request.getFileName()==null ||
-        request.getSize()==null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            request.getFileName()==null ||
+            request.getSize()==null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         FileMetadata fileMetadata=new FileMetadata(request);
         fileMetadataRepository.save(fileMetadata);
         fileStorageService.createFile(fileMetadata.getId());
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @RequestMapping(value="/files/upload/chunked", method=RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity chunkedFileUpload(@RequestBody FileChunkDto request,
-                                     MultipartFile file) throws IOException {
-        if (request.getFileId()==null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        if (fileMetadataRepository.findById(request.getFileId())==null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        FileChunk fileChunk=new FileChunk(request);
-        fileChunkRepository.save(fileChunk);
-        // to do: put chunk to file
-        fileStorageService.putChunkToFile(fileChunk, file);
+    @RequestMapping(value="/files/upload/", method=RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity postFileUpload(@RequestPart(value = "fileId") String fileId,
+                                            @RequestPart(value = "hashcode", required = false) String hashCode,
+                                            @RequestPart(value = "file", required = true)
+                                                    MultipartFile file) throws IOException {
+        if (fileId==null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        int ifileId=Integer.parseInt(fileId);
+        if (fileMetadataRepository.findById(ifileId)==null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        fileStorageService.fileUpload(ifileId, file);
         return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @RequestMapping(value="/files/upload/", method=RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity putFileUpload(@RequestPart(value = "fileId") String fileId,
+                                     @RequestPart(value = "hashcode", required = false) String hashCode,
+                                     @RequestPart(value = "file", required = true)
+                                             MultipartFile file) throws IOException {
+        if (fileId==null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        int ifileId=Integer.parseInt(fileId);
+        if (fileMetadataRepository.findById(ifileId)==null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        fileStorageService.fileUpload(ifileId, file);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

@@ -1,6 +1,8 @@
-package su.grinev.FileUploader.model;
+package su.grinev.FileUploader.jdbc.model;
 
+import io.swagger.models.auth.In;
 import su.grinev.FileUploader.dto.FileMetadataDto;
+import su.grinev.FileUploader.model.FileChunk;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -9,12 +11,11 @@ import java.util.List;
 public class FileMetadata {
 
     private Integer id;
-    private String hash;
     private String fileName;
-    private Long size;
-    private Long actualSize;
     private String displayName;
-    private boolean uploaded;
+    private Long size;
+    private Integer hashcode;
+    private Integer state;
     private LocalDateTime createdTime;
     private List<FileChunk> fileChunks;
 
@@ -22,37 +23,29 @@ public class FileMetadata {
         this.displayName=fileMetadataDto.getDisplayName();
         this.fileName=fileMetadataDto.getFileName();
         this.size=fileMetadataDto.getSize();
-        this.hash=null;
-        this.actualSize=0l;
-        this.uploaded=false;
+        this.hashcode=null;
+        this.state=0;
         this.createdTime=LocalDateTime.now();
         this.fileChunks=new ArrayList<>();
     }
 
-    public FileMetadata(Integer id, String hash, String displayName, Long size, String fileName) {
-        this.id = id;
-        this.hash = hash;
+    public FileMetadata(Integer id, String fileName, String displayName, Integer hashcode, Long size, Integer state) {
+        this.id=id;
+        this.hashcode = hashcode;
         this.displayName = displayName;
         this.size = size;
+        this.state=state;
         this.fileName = fileName;
     }
 
     public void setAll(FileMetadata fileMetadata){
         this.id=fileMetadata.id;
-        this.hash=fileMetadata.hash;
+        this.hashcode=fileMetadata.hashcode;
         this.displayName=fileMetadata.displayName;
         this.size=fileMetadata.size;
         this.fileName=fileMetadata.fileName;
-        this.actualSize=fileMetadata.actualSize;
+        this.state=0;
         this.createdTime=fileMetadata.createdTime;
-    }
-
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
     }
 
     public Integer getId() {
@@ -63,28 +56,12 @@ public class FileMetadata {
         this.id = id;
     }
 
-    public String getHash() {
-        return hash;
+    public Integer getHash() {
+        return hashcode;
     }
 
-    public void setHash(String hash) {
-        this.hash = hash;
-    }
-
-    public Long getSize() {
-        return size;
-    }
-
-    public void setSize(Long size) {
-        this.size = size;
-    }
-
-    public Long getActualSize() {
-        return actualSize;
-    }
-
-    public void setActualSize(Long actualSize) {
-        this.actualSize = actualSize;
+    public void setHash(Integer hash) {
+        this.hashcode = hash;
     }
 
     public String getFileName() {
@@ -95,12 +72,28 @@ public class FileMetadata {
         this.fileName = fileName;
     }
 
-    public boolean isUploaded() {
-        return uploaded;
+    public Long getSize() {
+        return size;
     }
 
-    public void setUploaded(boolean uploaded) {
-        this.uploaded = uploaded;
+    public void setSize(Long size) {
+        this.size = size;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public Integer getState() {
+        return state;
+    }
+
+    public void setState(Integer state) {
+        this.state = state;
     }
 
     public LocalDateTime getCreatedTime() {

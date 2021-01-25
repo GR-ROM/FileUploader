@@ -9,11 +9,10 @@ import java.io.*;
 
 @Service
 public class FileStorageService {
-
+    @Value(value = "${TMP_FILES_DIRECTORY}")
     String tempFilesDirectory;
     public FileStorageService(){}
-    public FileStorageService(@Value(value = "${TMP_FILES_DIRECTORY}")
-                                      String tempFilesDirectory){
+    public FileStorageService(String tempFilesDirectory){
         this.tempFilesDirectory=tempFilesDirectory;
     }
 
@@ -33,9 +32,11 @@ public class FileStorageService {
         }
     }
 
-    public int fileUpload(int fileId, int bytesCount, InputStream is) throws IOException {
+    public int fileUpload(int fileId, MultipartFile file) throws IOException {
         int bytesRead=0;
+        int bytesCount=0;
         byte[] buffer=new byte[65536];
+        InputStream is=file.getInputStream();
         FileOutputStream out = new FileOutputStream(tempFilesDirectory + "/" + fileId + ".part", true);
         try {
             while ((bytesRead = is.read(buffer))!=-1) {

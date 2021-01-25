@@ -1,24 +1,19 @@
 package su.grinev.FileUploader.dao;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import su.grinev.FileUploader.model.FileChunk;
-import su.grinev.FileUploader.model.FileMetadata;
+import su.grinev.FileUploader.jdbc.model.FileMetadata;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class FileMetadataRepository {
 
     private int id;
-    @Autowired
     private Map<Integer,FileMetadata> fileMetadata;
 
     public FileMetadataRepository(){
         id=0;
+        fileMetadata = new HashMap<>();
     }
 
     public int getId() {
@@ -51,9 +46,9 @@ public class FileMetadataRepository {
         }
     }
 
-    public FileMetadata findByHash(String hash){
+    public FileMetadata findByHash(int hash){
         synchronized (this.fileMetadata) {
-            return fileMetadata.values().stream().filter(l -> l.getHash().equalsIgnoreCase(hash)).findFirst().orElse(null);
+            return fileMetadata.values().stream().filter(l -> l.getHash()==hash).findFirst().orElse(null);
         }
     }
 

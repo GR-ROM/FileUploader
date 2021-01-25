@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import su.grinev.FileUploader.dao.FileMetadataRepository;
 import su.grinev.FileUploader.model.FileChunk;
-import su.grinev.FileUploader.model.FileMetadata;
+import su.grinev.FileUploader.jdbc.model.FileMetadata;
 
 @Service
 public class FileUploadServiceImpl implements FileUploadService{
@@ -26,7 +26,7 @@ public class FileUploadServiceImpl implements FileUploadService{
     }
 
     @Override
-    public FileMetadata findByHash(String hash) {
+    public FileMetadata findByHash(int hash) {
         return this.fileMetadataRepository.findByHash(hash);
     }
 
