@@ -16,8 +16,8 @@ public class SpringJdbcConfig {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
         dataSource.setUrl("jdbc:mysql://192.168.0.101:3306/capstone");
-        dataSource.setUsername("root");
-        dataSource.setPassword("");
+        dataSource.setUsername("capstone");
+        dataSource.setPassword("password");
 
         return dataSource;
     }
