@@ -11,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import su.grinev.FileUploader.jdbc.model.FileMetadata;
 
+import java.time.Instant;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -43,7 +44,7 @@ public class FileMetadataRepositoryTest {
 
     @BeforeEach
     public void setUp(){
-        testFileMetaData=new FileMetadata(1, "test", "hashtest", 111, 1000l, 0);
+        testFileMetaData=new FileMetadata(1, "test", "hashtest", 111, 1000l, 0, Instant.now());
         fileMetadataRepository= Mockito.mock(FileMetadataRepository.class);
         fileMetadataRepository.save(testFileMetaData);
     }

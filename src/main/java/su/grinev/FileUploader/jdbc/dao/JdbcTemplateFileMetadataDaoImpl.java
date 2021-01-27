@@ -1,12 +1,15 @@
 package su.grinev.FileUploader.jdbc.dao;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Component;
 import su.grinev.FileUploader.jdbc.model.FileMetadata;
 
 import javax.sql.DataSource;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Component
 public class JdbcTemplateFileMetadataDaoImpl implements FileMetadataDao{
 
     private DataSource dataSource;
@@ -19,10 +22,10 @@ public class JdbcTemplateFileMetadataDaoImpl implements FileMetadataDao{
     }
 
     @Override
-    public void createFileMetadata(String fileName, String displayName, String hashcode, Long size, Integer state, LocalDateTime dateTime) {
+    public void createFileMetadata(String fileName, String displayName, Integer hashcode, Long size, Integer state) {
         String SQL = "INSERT INTO filemetadata (filename, displayname, hashcode, size, state, datetime) VALUES (?,?,?,?,?,?)";
 
-        jdbcTemplate.update(SQL, fileName, displayName, hashcode, size, state, dateTime);
+        jdbcTemplate.update(SQL, fileName, displayName, hashcode, size, state, Instant.now());
         System.out.println("FileMetadata successfully created.\nfilename: " + fileName + ";\ndisplayname: " +
                 displayName + ";\nhashcode: " + hashcode + "\nsize: "+size+";\nstate: "+state+"");
     }

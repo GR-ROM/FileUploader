@@ -10,7 +10,7 @@ public interface FileMetadataDao {
 
     public void setDatasource(DataSource datasource);
 
-    public void createFileMetadata(String fileName, String displayName, String hashcode, Long size, Integer state, LocalDateTime dateTime);
+    public void createFileMetadata(String fileName, String displayName, Integer hashcode, Long size, Integer state);
 
     public FileMetadata getFileMetadataById(int id);
 

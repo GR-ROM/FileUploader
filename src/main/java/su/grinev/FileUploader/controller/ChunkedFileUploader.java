@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import su.grinev.FileUploader.dao.FileChunkRepository;
 import su.grinev.FileUploader.dao.FileMetadataRepository;
 import su.grinev.FileUploader.dto.FileMetadataDto;
+import su.grinev.FileUploader.jdbc.dao.JdbcTemplateFileMetadataDaoImpl;
 import su.grinev.FileUploader.jdbc.model.FileMetadata;
 import su.grinev.FileUploader.service.FileStorageService;
 import su.grinev.FileUploader.service.FileUploadServiceImpl;
@@ -19,22 +20,18 @@ import java.io.IOException;
 public class ChunkedFileUploader {
 
     @Autowired
-    private FileMetadataRepository fileMetadataRepository;
-    @Autowired
-    private FileUploadServiceImpl fileUploadService;
-    @Autowired
     private FileStorageService fileStorageService;
     @Autowired
     private FileChunkRepository fileChunkRepository;
+    @Autowired
+    private JdbcTemplateFileMetadataDaoImpl jdbcTemplateFileMetadataDao;
 
     public ChunkedFileUploader(){}
 
-    public ChunkedFileUploader(FileMetadataRepository fileMetadataRepository,
-                               FileUploadServiceImpl fileUploadService,
-                               FileStorageService fileStorageService){
+    public ChunkedFileUploader(JdbcTemplateFileMetadataDaoImpl jdbcTemplateFileMetadataDao,
+                               FileStorageService fileStorageService) {
         this.fileStorageService = fileStorageService;
-        this.fileMetadataRepository=fileMetadataRepository;
-        this.fileUploadService=fileUploadService;
+        this.jdbcTemplateFileMetadataDao = jdbcTemplateFileMetadataDao;
     }
 
     @RequestMapping(path="/files/upload/create", consumes = "application/JSON", produces = "application/JSON",
@@ -44,7 +41,7 @@ public class ChunkedFileUploader {
             request.getFileName()==null ||
             request.getSize()==null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         FileMetadata fileMetadata=new FileMetadata(request);
-        fileMetadataRepository.save(fileMetadata);
+        jdbcTemplateFileMetadataDao.createFileMetadata(request.getFileName(), request.getDisplayName(), 0, request.getSize(), 0);
         fileStorageService.createFile(fileMetadata.getId());
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
@@ -56,7 +53,7 @@ public class ChunkedFileUploader {
                                                     MultipartFile file) throws IOException {
         if (fileId==null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         int ifileId=Integer.parseInt(fileId);
-        if (fileMetadataRepository.findById(ifileId)==null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        //if (fileMetadataRepository.findById(ifileId)==null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         fileStorageService.fileUpload(ifileId, file);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
@@ -68,7 +65,7 @@ public class ChunkedFileUploader {
                                              MultipartFile file) throws IOException {
         if (fileId==null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         int ifileId=Integer.parseInt(fileId);
-        if (fileMetadataRepository.findById(ifileId)==null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        //if (fileMetadataRepository.findById(ifileId)==null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         fileStorageService.fileUpload(ifileId, file);
         return new ResponseEntity<>(HttpStatus.OK);
     }

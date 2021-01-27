@@ -17,6 +17,7 @@ public class FileMetadataMapper implements RowMapper {
                 resultSet.getString("displayname"),
                 resultSet.getInt("hashcode"),
                 resultSet.getLong("size"),
-                resultSet.getInt(""));
+                resultSet.getInt("state"),
+                resultSet.getTimestamp("createdtime").toInstant());
     }
 }

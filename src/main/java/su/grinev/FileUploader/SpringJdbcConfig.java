@@ -9,7 +9,6 @@ import javax.sql.DataSource;
 
 
 @Configuration
-@ComponentScan()
 public class SpringJdbcConfig {
     @Bean
     public DataSource mysqlDataSource() {

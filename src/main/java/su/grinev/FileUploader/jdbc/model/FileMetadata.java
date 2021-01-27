@@ -4,6 +4,7 @@ import io.swagger.models.auth.In;
 import su.grinev.FileUploader.dto.FileMetadataDto;
 import su.grinev.FileUploader.model.FileChunk;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,8 +17,14 @@ public class FileMetadata {
     private Long size;
     private Integer hashcode;
     private Integer state;
-    private LocalDateTime createdTime;
-    private List<FileChunk> fileChunks;
+    private Instant createdTime;
+    private List<String> tags;
+
+    public static enum FileState{
+        FILE_EMPTY,
+        FILE_UPLOADED,
+        FILE_CONVERTED
+    }
 
     public FileMetadata(FileMetadataDto fileMetadataDto){
         this.displayName=fileMetadataDto.getDisplayName();
@@ -25,17 +32,17 @@ public class FileMetadata {
         this.size=fileMetadataDto.getSize();
         this.hashcode=null;
         this.state=0;
-        this.createdTime=LocalDateTime.now();
-        this.fileChunks=new ArrayList<>();
+        this.createdTime=null;
     }
 
-    public FileMetadata(Integer id, String fileName, String displayName, Integer hashcode, Long size, Integer state) {
+    public FileMetadata(Integer id, String fileName, String displayName, Integer hashcode, Long size, Integer state, Instant createdTime) {
         this.id=id;
         this.hashcode = hashcode;
         this.displayName = displayName;
         this.size = size;
         this.state=state;
         this.fileName = fileName;
+        this.createdTime=createdTime;
     }
 
     public void setAll(FileMetadata fileMetadata){
@@ -46,6 +53,22 @@ public class FileMetadata {
         this.fileName=fileMetadata.fileName;
         this.state=0;
         this.createdTime=fileMetadata.createdTime;
+    }
+
+    public Integer getHashcode() {
+        return hashcode;
+    }
+
+    public void setHashcode(Integer hashcode) {
+        this.hashcode = hashcode;
+    }
+
+    public List<String> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<String> tags) {
+        this.tags = tags;
     }
 
     public Integer getId() {
@@ -96,19 +119,12 @@ public class FileMetadata {
         this.state = state;
     }
 
-    public LocalDateTime getCreatedTime() {
+    public Instant getCreatedTime() {
         return createdTime;
     }
 
-    public void setCreatedTime(LocalDateTime createdTime) {
+    public void setCreatedTime(Instant createdTime) {
         this.createdTime = createdTime;
     }
 
-    public List<FileChunk> getFileChunks() {
-        return fileChunks;
-    }
-
-    public void setFileChunks(List<FileChunk> fileChunks) {
-        this.fileChunks = fileChunks;
-    }
 }
