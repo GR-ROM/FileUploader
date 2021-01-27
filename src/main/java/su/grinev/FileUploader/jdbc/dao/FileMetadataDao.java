@@ -8,16 +8,16 @@ import java.util.List;
 
 public interface FileMetadataDao {
 
-    public void setDatasource(DataSource datasource);
+    void setDatasource(DataSource datasource);
 
-    public void createFileMetadata(String fileName, String displayName, Integer hashcode, Long size, Integer state);
+    void createFileMetadata(String fileName, String displayName, Integer hashcode, Long size, Integer state);
 
-    public FileMetadata getFileMetadataById(int id);
+    FileMetadata getFileMetadataById(int id);
 
-    public List<FileMetadata> listFileMetadata();
+    List<FileMetadata> listFileMetadata();
 
-    public void removeFileMetadata(int id);
+    void removeFileMetadata(int id);
 
-    public void updateFileMetadata(String fileName, String displayName, String hashcode, Long size, Integer state, LocalDateTime dateTime, int id);
+    void updateFileMetadata(String fileName, String displayName, String hashcode, Long size, Integer state, LocalDateTime dateTime, int id);
 
 }

@@ -1,11 +1,9 @@
 package su.grinev.FileUploader.jdbc.model;
 
-import io.swagger.models.auth.In;
 import su.grinev.FileUploader.dto.FileMetadataDto;
 import su.grinev.FileUploader.model.FileChunk;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,12 +17,11 @@ public class FileMetadata {
     private Integer state;
     private Instant createdTime;
     private List<String> tags;
+    private List<FileChunk> fileChunks;
 
-    public static enum FileState{
-        FILE_EMPTY,
-        FILE_UPLOADED,
-        FILE_CONVERTED
-    }
+    public static final int FILE_EMPTY=0;
+    public static final int FILE_UPLOADING=1;
+    public static final int FILE_READY=2;
 
     public FileMetadata(FileMetadataDto fileMetadataDto){
         this.displayName=fileMetadataDto.getDisplayName();
@@ -33,6 +30,7 @@ public class FileMetadata {
         this.hashcode=null;
         this.state=0;
         this.createdTime=null;
+        this.fileChunks=new ArrayList<>();
     }
 
     public FileMetadata(Integer id, String fileName, String displayName, Integer hashcode, Long size, Integer state, Instant createdTime) {
@@ -43,6 +41,7 @@ public class FileMetadata {
         this.state=state;
         this.fileName = fileName;
         this.createdTime=createdTime;
+        this.fileChunks=new ArrayList<>();
     }
 
     public void setAll(FileMetadata fileMetadata){
@@ -127,4 +126,19 @@ public class FileMetadata {
         this.createdTime = createdTime;
     }
 
+    public Long getFileSize() {
+        return fileSize;
+    }
+
+    public void setFileSize(Long fileSize) {
+        this.fileSize = fileSize;
+    }
+
+    public List<FileChunk> getFileChunks() {
+        return fileChunks;
+    }
+
+    public void setFileChunks(List<FileChunk> fileChunks) {
+        this.fileChunks = fileChunks;
+    }
 }

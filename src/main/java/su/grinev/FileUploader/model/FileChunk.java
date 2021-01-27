@@ -2,6 +2,8 @@ package su.grinev.FileUploader.model;
 
 import su.grinev.FileUploader.dto.FileChunkDto;
 
+import java.util.Objects;
+
 public class FileChunk{
     private Integer chunkId;
     private Integer fileId;
@@ -76,4 +78,21 @@ public class FileChunk{
         this.validHashcode = validHashcode;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FileChunk fileChunk = (FileChunk) o;
+        return validHashcode == fileChunk.validHashcode &&
+                chunkId.equals(fileChunk.chunkId) &&
+                fileId.equals(fileChunk.fileId) &&
+                Objects.equals(hashcode, fileChunk.hashcode) &&
+                offset.equals(fileChunk.offset) &&
+                size.equals(fileChunk.size);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(chunkId, fileId, hashcode, offset, size, validHashcode);
+    }
 }

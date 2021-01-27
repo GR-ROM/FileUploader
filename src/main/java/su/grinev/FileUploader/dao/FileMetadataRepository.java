@@ -2,6 +2,7 @@ package su.grinev.FileUploader.dao;
 
 import org.springframework.stereotype.Component;
 import su.grinev.FileUploader.jdbc.model.FileMetadata;
+import su.grinev.FileUploader.model.FileChunk;
 
 import java.util.*;
 
@@ -31,6 +32,14 @@ public class FileMetadataRepository {
     public void setFileMetadata(Map<Integer, FileMetadata> fileMetadata) {
         this.fileMetadata = fileMetadata;
     }
+
+   /* public void putChunk(FileChunk fileChunk){
+        if (fileMetadata.get(fileChunk.getFileId())!=null) {
+            synchronized (this.fileMetadata) {
+                fileMetadata.get(fileChunk.getFileId()).getFileChunks().add(fileChunk);
+            }
+        }
+    }*/
 
     public void save(FileMetadata fileMetadata){
         synchronized (this.fileMetadata){
