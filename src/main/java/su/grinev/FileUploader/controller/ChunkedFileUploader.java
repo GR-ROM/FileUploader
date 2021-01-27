@@ -6,6 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import su.grinev.FileUploader.SpringJdbcConfig;
 import su.grinev.FileUploader.dao.FileChunkRepository;
 import su.grinev.FileUploader.dao.FileMetadataRepository;
 import su.grinev.FileUploader.dto.FileMetadataDto;
@@ -22,16 +23,19 @@ public class ChunkedFileUploader {
     @Autowired
     private FileStorageService fileStorageService;
     @Autowired
-    private FileChunkRepository fileChunkRepository;
+    private SpringJdbcConfig springJdbcConfig;
     @Autowired
     private JdbcTemplateFileMetadataDaoImpl jdbcTemplateFileMetadataDao;
 
     public ChunkedFileUploader(){}
 
     public ChunkedFileUploader(JdbcTemplateFileMetadataDaoImpl jdbcTemplateFileMetadataDao,
-                               FileStorageService fileStorageService) {
+                               FileStorageService fileStorageService,
+                               SpringJdbcConfig springJdbcConfig) {
+        this.springJdbcConfig=springJdbcConfig;
         this.fileStorageService = fileStorageService;
         this.jdbcTemplateFileMetadataDao = jdbcTemplateFileMetadataDao;
+        this.jdbcTemplateFileMetadataDao.setDatasource(springJdbcConfig.mysqlDataSource());
     }
 
     @RequestMapping(path="/files/upload/create", consumes = "application/JSON", produces = "application/JSON",

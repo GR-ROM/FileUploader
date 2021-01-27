@@ -1,7 +1,9 @@
 package su.grinev.FileUploader.jdbc.dao;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import su.grinev.FileUploader.SpringJdbcConfig;
 import su.grinev.FileUploader.jdbc.model.FileMetadata;
 
 import javax.sql.DataSource;
@@ -14,6 +16,12 @@ public class JdbcTemplateFileMetadataDaoImpl implements FileMetadataDao{
 
     private DataSource dataSource;
     private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    public JdbcTemplateFileMetadataDaoImpl(DataSource dataSource){
+        this.dataSource=dataSource;
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
+    }
 
     @Override
     public void setDatasource(DataSource datasource) {

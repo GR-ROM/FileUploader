@@ -14,7 +14,7 @@ public class FileMetadata {
     private Integer id;
     private String fileName;
     private String displayName;
-    private Long size;
+    private Long fileSize;
     private Integer hashcode;
     private Integer state;
     private Instant createdTime;
@@ -29,7 +29,7 @@ public class FileMetadata {
     public FileMetadata(FileMetadataDto fileMetadataDto){
         this.displayName=fileMetadataDto.getDisplayName();
         this.fileName=fileMetadataDto.getFileName();
-        this.size=fileMetadataDto.getSize();
+        this.fileSize=fileMetadataDto.getSize();
         this.hashcode=null;
         this.state=0;
         this.createdTime=null;
@@ -39,7 +39,7 @@ public class FileMetadata {
         this.id=id;
         this.hashcode = hashcode;
         this.displayName = displayName;
-        this.size = size;
+        this.fileSize = size;
         this.state=state;
         this.fileName = fileName;
         this.createdTime=createdTime;
@@ -49,7 +49,7 @@ public class FileMetadata {
         this.id=fileMetadata.id;
         this.hashcode=fileMetadata.hashcode;
         this.displayName=fileMetadata.displayName;
-        this.size=fileMetadata.size;
+        this.fileSize=fileMetadata.fileSize;
         this.fileName=fileMetadata.fileName;
         this.state=0;
         this.createdTime=fileMetadata.createdTime;
@@ -96,11 +96,11 @@ public class FileMetadata {
     }
 
     public Long getSize() {
-        return size;
+        return fileSize;
     }
 
     public void setSize(Long size) {
-        this.size = size;
+        this.fileSize = size;
     }
 
     public String getDisplayName() {
