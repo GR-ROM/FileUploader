@@ -2,6 +2,8 @@ package su.grinev.FileUploader.model;
 
 import su.grinev.FileUploader.utility.SocketUploader;
 
+import java.util.Objects;
+
 public class DataConnection {
 
     private short port;
@@ -57,5 +59,22 @@ public class DataConnection {
 
     public void setSocketUploader(SocketUploader socketUploader) {
         this.socketUploader = socketUploader;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DataConnection that = (DataConnection) o;
+        return port == that.port &&
+                state == that.state &&
+                fileChunk.equals(that.fileChunk) &&
+                socketUploader.equals(that.socketUploader) &&
+                thread.equals(that.thread);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(port, state, fileChunk, socketUploader, thread);
     }
 }

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 public class FileChunkRepository {
@@ -35,29 +36,35 @@ public class FileChunkRepository {
         this.fileChunkMap = fileChunkMap;
     }
 
-    public void save(FileChunk fileChunk){
-        synchronized (this.fileChunkMap){
+    public synchronized List<FileChunk> getChunkListByFileId(int fileId){
+        return fileChunkMap
+                .values()
+                .stream()
+                .filter(t -> t.getFileId()==fileId)
+                .collect(Collectors.toList());
+    }
+
+    public synchronized void save(FileChunk fileChunk){
             id++;
             fileChunk.setChunkId(id);
             this.fileChunkMap.put(id, fileChunk);
-        }
     }
 
-    public FileChunk findByHash(int hash){
-        synchronized (this.fileChunkMap) {
-            return fileChunkMap.values().stream().filter(t -> t.getHashcode()==hash).findFirst().orElse(null);
-        }
+    public synchronized FileChunk findByHash(int hash){
+            return fileChunkMap
+                    .values()
+                    .stream()
+                    .filter(t -> t.getHashcode()==hash)
+                    .findFirst()
+                    .orElse(null);
     }
 
-    public List<FileChunk> findAll(){
-        synchronized (this.fileChunkMap) {
-            return new ArrayList<>(fileChunkMap.values());
-        }
+    public synchronized List<FileChunk> findAll(){
+        return new ArrayList<>(fileChunkMap.values());
     }
 
-    public FileChunk findById(int id){
-        synchronized (this.fileChunkMap){
+    public synchronized FileChunk findById(int id){
             return this.fileChunkMap.get(id);
-        }
     }
+
 }

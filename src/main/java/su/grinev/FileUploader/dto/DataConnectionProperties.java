@@ -2,17 +2,17 @@ package su.grinev.FileUploader.dto;
 
 public class DataConnectionProperties {
 
-    private short dataPort;
+    private int chunkId;
 
-    public DataConnectionProperties(short dataPort) {
-        this.dataPort = dataPort;
+    public int getChunkId() {
+        return chunkId;
     }
 
-    public short getDataPort() {
-        return dataPort;
+    public void setChunkId(int chunkId) {
+        this.chunkId = chunkId;
     }
 
-    public void setDataPort(short dataPort) {
-        this.dataPort = dataPort;
+    public DataConnectionProperties(int chunkId) {
+        this.chunkId = chunkId;
     }
 }

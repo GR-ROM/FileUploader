@@ -1,5 +1,6 @@
 package su.grinev.FileUploader.dao;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import su.grinev.FileUploader.jdbc.model.FileMetadata;
 import su.grinev.FileUploader.model.FileChunk;
