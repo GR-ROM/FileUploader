@@ -5,10 +5,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import su.grinev.FileUploader.model.DataConnection;
 import su.grinev.FileUploader.model.FileChunk;
+import su.grinev.FileUploader.utility.CustomThreadPool;
 import su.grinev.FileUploader.utility.SocketUploader;
+import su.grinev.FileUploader.utility.TaskWrapper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Stream;
 
@@ -19,21 +22,20 @@ public class DataConnectionPoolService {
     private final int maxConcurentConnections;
     private final int lowPort;
     private final int highPort;
+    private final CustomThreadPool customThreadPool;
 
-    private DataConnection getDataConnectionByFileChunkId(int chunkId){
+    private Optional<DataConnection> getDataConnectionByFileChunkId(int chunkId){
         return dataConnectionList
                 .stream()
                 .filter(t -> t.getFileChunk().getChunkId()==chunkId)
-                .findFirst()
-                .orElse(null);
+                .findFirst();
     }
 
-    private DataConnection getClosedDataConnectionFromPool(){
+    private Optional<DataConnection> getClosedDataConnectionFromPool(){
         return dataConnectionList
                 .stream()
                 .filter(t -> t.getState()==DataConnection.DATA_CONNECTION_CLOSED)
-                .findFirst()
-                .orElse(null);
+                .findFirst();
     }
 
     @Autowired
@@ -42,7 +44,9 @@ public class DataConnectionPoolService {
                                      @Value("${DATA_CONNECTIONS_LOW_PORT}")
                                              int lowPort,
                                      @Value("${DATA_CONNECTIONS_HIGH_PORT}")
-                                             int highPort){
+                                             int highPort,
+                                     CustomThreadPool customThreadPool){
+        this.customThreadPool=customThreadPool;
         this.maxConcurentConnections=maxConcurentConnections;
         this.lowPort = lowPort;
         this.highPort = highPort;
@@ -54,36 +58,31 @@ public class DataConnectionPoolService {
     }
 
     public void resetDataConnection(int chunkId){
-        DataConnection dataConnection=getDataConnectionByFileChunkId(chunkId);
-        if (dataConnection==null) return;
-        dataConnection.getSocketUploader().resetFilePointer();
+        Optional<DataConnection> dataConnection=getDataConnectionByFileChunkId(chunkId);
+        if (dataConnection.isPresent()) return;
+        dataConnection.get().getSocketUploader().resetFilePointer();
     }
 
     public DataConnection openDataConnection(FileChunk fileChunk){
-        DataConnection dataConnection=getClosedDataConnectionFromPool();
-        if (dataConnection==null) return null;
+        Optional<DataConnection> dataConnection=getClosedDataConnectionFromPool();
+        if (!dataConnection.isPresent()) return null;
         // fill connection context and start a thread
-        dataConnection.setFileChunk(fileChunk);
-        dataConnection.setSocketUploader(new SocketUploader(fileChunk, dataConnection.getPort()));
-        dataConnection.setThread(new Thread(dataConnection.getSocketUploader()));
-        dataConnection.setState(DataConnection.DATA_CONNECTION_OPENED);
-        dataConnection.getThread().start();
-        return dataConnection;
+        dataConnection.get().setFileChunk(fileChunk);
+        dataConnection.get().setSocketUploader(new SocketUploader(fileChunk, dataConnection.get().getPort()));
+        dataConnection.get().setState(DataConnection.DATA_CONNECTION_OPENED);
+        dataConnection.get().setTask(new TaskWrapper(dataConnection.get().getSocketUploader()));
+        customThreadPool.enqueueTask(dataConnection.get().getTask());
+        return dataConnection.get();
     }
 
     public void closeDataConnectionByPort(int chunkId){
-        DataConnection dataConnection=getDataConnectionByFileChunkId(chunkId);
-        if (dataConnection==null) return;
-        dataConnection.getSocketUploader().setStop();
-        try {
-            dataConnection.getThread().join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        Optional<DataConnection> dataConnection=getDataConnectionByFileChunkId(chunkId);
+        if (!dataConnection.isPresent()) return;
+        dataConnection.get().getTask().terminate();
         // clear connection context
-        dataConnection.setSocketUploader(null);
-        dataConnection.setThread(null);
-        dataConnection.setFileChunk(null);
-        dataConnection.setState(DataConnection.DATA_CONNECTION_CLOSED);
+        dataConnection.get().setSocketUploader(null);
+        dataConnection.get().setTask(null);
+        dataConnection.get().setFileChunk(null);
+        dataConnection.get().setState(DataConnection.DATA_CONNECTION_CLOSED);
     }
 }

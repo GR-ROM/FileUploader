@@ -1,6 +1,7 @@
 package su.grinev.FileUploader.model;
 
 import su.grinev.FileUploader.utility.SocketUploader;
+import su.grinev.FileUploader.utility.TaskWrapper;
 
 import java.util.Objects;
 
@@ -10,7 +11,7 @@ public class DataConnection {
     private int state;
     private FileChunk fileChunk;
     private SocketUploader socketUploader;
-    private Thread thread;
+    private TaskWrapper task;
 
     public static final int DATA_CONNECTION_OPENED=0;
     public static final int DATA_CONNECTION_CLOSED=DATA_CONNECTION_OPENED+1;
@@ -23,10 +24,6 @@ public class DataConnection {
 
     public short getPort() {
         return port;
-    }
-
-    public void setPort(short port) {
-        this.port = port;
     }
 
     public int getState() {
@@ -45,12 +42,12 @@ public class DataConnection {
         return this.fileChunk;
     }
 
-    public Thread getThread() {
-        return thread;
+    public TaskWrapper getTask() {
+        return task;
     }
 
-    public void setThread(Thread thread) {
-        this.thread = thread;
+    public void setTask(TaskWrapper task) {
+        this.task = task;
     }
 
     public SocketUploader getSocketUploader() {
@@ -69,12 +66,11 @@ public class DataConnection {
         return port == that.port &&
                 state == that.state &&
                 fileChunk.equals(that.fileChunk) &&
-                socketUploader.equals(that.socketUploader) &&
-                thread.equals(that.thread);
+                socketUploader.equals(that.socketUploader);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(port, state, fileChunk, socketUploader, thread);
+        return Objects.hash(port, state, fileChunk, socketUploader);
     }
 }

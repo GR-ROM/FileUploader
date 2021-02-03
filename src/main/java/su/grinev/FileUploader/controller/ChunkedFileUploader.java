@@ -114,7 +114,7 @@ public class ChunkedFileUploader {
 
     @RequestMapping(value="/files/upload/dataconnection/close",
                     method=RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<DataConnectionProperties> closeDataConnection(@RequestParam Integer chunkId){
+    public ResponseEntity<DataConnectionProperties> closeDataConnection(@RequestParam(required = true) Integer chunkId){
         if (!isExistingChunkId(chunkId)) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         dataConnectionPoolService.closeDataConnectionByPort(chunkId);
         return new ResponseEntity<>(HttpStatus.OK);

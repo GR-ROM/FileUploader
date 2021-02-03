@@ -8,6 +8,10 @@ public class FileChunkDto {
     private Long offset;
     private Integer size;
 
+    public FileChunkDto(){
+
+    }
+
     public FileChunkDto(FileChunk fileChunk) {
         this.size=fileChunk.getSize();
         this.offset=fileChunk.getOffset();
