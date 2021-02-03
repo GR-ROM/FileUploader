@@ -88,8 +88,9 @@ public class ChunkedFileUploader {
     public ResponseEntity<DataConnectionProperties> openDataConnection(@RequestBody FileChunkDto request){
         if (!isValidFileChunkDto(request)) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         if (!isExistingFileId(request.getFileId())) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        // TO DO: add chunk intersection check
         FileChunk fileChunk=new FileChunk(request);
+        if (fileMetadataRepository.findById(fileChunk.getFileId()).getFileSize()<fileChunk.getSize())
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         fileChunkRepository.save(fileChunk);
         if (dataConnectionPoolService.openDataConnection(fileChunk)==null)
                     return new ResponseEntity<>(HttpStatus.TOO_MANY_REQUESTS);

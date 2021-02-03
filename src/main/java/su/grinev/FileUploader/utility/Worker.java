@@ -42,7 +42,7 @@ public class Worker implements Runnable {
                 currentTask.getTask().run();
                 this.countingSemaphore.countDown();
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                System.out.println("Interrupted exception");
             }
         }
 

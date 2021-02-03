@@ -52,6 +52,14 @@ public class CustomThreadPoolTest {
         System.out.println("All done in " + (System.currentTimeMillis() - time) + " ms");
     }
 
+    @ParameterizedTest
+    @MethodSource("provideNumberOfThreads")
+    public void shouldStartAndTerminateAllWorkers(int threads) {
+        threadPool = new CustomThreadPool(threads);
+        testTask.forEach(t -> threadPool.enqueueTask(new TaskWrapper(t)));
+        Assertions.assertTimeout(Duration.ofSeconds(2), () -> threadPool.terminateAll());
+    }
+
     @Test
     public void shouldFireIllegalArgumentExceptionInCaseOfZeroThreads() {
         Assertions.assertThrows(IllegalArgumentException.class, () -> threadPool = new CustomThreadPool(0));

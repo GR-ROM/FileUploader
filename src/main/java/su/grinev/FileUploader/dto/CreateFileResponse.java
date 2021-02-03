@@ -6,17 +6,19 @@ import org.springframework.stereotype.Component;
 public class CreateFileResponse {
     private int fileId;
 
-    public CreateFileResponse(){}
-
     public CreateFileResponse(int tempFileId) {
         this.fileId = tempFileId;
+    }
+
+    public CreateFileResponse(){
+
     }
 
     public int getFileId() {
         return fileId;
     }
 
-    public void setFileId(int tempFileId) {
-        this.fileId = tempFileId;
+    public void setFileId(int fileId) {
+        this.fileId = fileId;
     }
 }
