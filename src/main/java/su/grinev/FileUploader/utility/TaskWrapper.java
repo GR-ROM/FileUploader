@@ -19,7 +19,7 @@ public class TaskWrapper {
     }
 
 
-    public void terminate(){
-        if (worker!=null) worker.terminate(this);
+    public void cancel(){
+        if (worker!=null) worker.terminateTask(this);
     }
 }

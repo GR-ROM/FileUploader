@@ -78,7 +78,7 @@ public class DataConnectionPoolService {
     public void closeDataConnectionByPort(int chunkId){
         Optional<DataConnection> dataConnection=getDataConnectionByFileChunkId(chunkId);
         if (!dataConnection.isPresent()) return;
-        dataConnection.get().getTask().terminate();
+        dataConnection.get().getTask().cancel();
         // clear connection context
         dataConnection.get().setSocketUploader(null);
         dataConnection.get().setTask(null);

@@ -20,7 +20,12 @@ public class Worker implements Runnable {
         this.thread = thread;
     }
 
-    public synchronized void terminate(TaskWrapper taskWrapper){
+    public synchronized void terminateWorker(){
+        stop=true;
+        thread.interrupt();
+    }
+
+    public synchronized void terminateTask(TaskWrapper taskWrapper){
         if (taskList.contains(taskWrapper)){
             taskList.remove(taskWrapper);
         } else {
