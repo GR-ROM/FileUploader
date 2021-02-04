@@ -8,6 +8,7 @@ import su.grinev.FileUploader.model.FileChunk;
 import su.grinev.FileUploader.utility.CustomThreadPool;
 import su.grinev.FileUploader.utility.SocketUploader;
 import su.grinev.FileUploader.utility.TaskWrapper;
+import su.grinev.FileUploader.utility.Watchdog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,8 @@ import java.util.stream.Stream;
 public class DataConnectionPoolService {
 
     private final String tempFilesDirectory;
+    private final Watchdog watchdog;
+    private final Thread watchdogThread;
     private final List<DataConnection> dataConnectionList;
     private final int maxConcurentConnections;
     private final int lowPort;
@@ -59,6 +62,9 @@ public class DataConnectionPoolService {
                 -> (new DataConnection((short) (new Random().nextInt(highPort - lowPort) + lowPort),
                 DataConnection.DATA_CONNECTION_CLOSED)));
         DataConnectionGenerator.limit(maxConcurentConnections).forEach(d -> dataConnectionList.add(d));
+        this.watchdog=new Watchdog(dataConnectionList, this);
+        this.watchdogThread=new Thread(this.watchdog);
+        this.watchdogThread.start();
     }
 
     public synchronized Optional<DataConnection> openDataConnection(FileChunk fileChunk) {

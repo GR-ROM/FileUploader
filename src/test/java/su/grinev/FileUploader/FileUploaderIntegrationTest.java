@@ -89,6 +89,27 @@ public class FileUploaderIntegrationTest {
                 .andReturn();
     }
 
+    @Test
+    public void shouldCreateFileAndOpenDataConnectionAndDoNothing() throws Exception {
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.post("/files/upload/create")
+                .content(asJsonString(fileMetadataDto))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andReturn();
+        System.out.println(mvcResult.getResponse().getContentAsString());
+        int fileId = JsonPath.parse(mvcResult.getResponse().getContentAsString()).read("$.fileId");
+        fileChunkDto.setFileId(fileId);
+        mvcResult = mvc.perform(MockMvcRequestBuilders.post("/files/upload/dataconnection/open")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(fileChunkDto)))
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andReturn();
+        System.out.println(mvcResult.getResponse().getContentAsString());
+        int chunkId = JsonPath.parse(mvcResult.getResponse().getContentAsString()).read("$.chunkId");
+        int dataPort = JsonPath.parse(mvcResult.getResponse().getContentAsString()).read("$.dataPort");
+        Thread.sleep(20000);
+    }
+
     public static String asJsonString(final Object obj) {
         try {
             return new ObjectMapper().writeValueAsString(obj);

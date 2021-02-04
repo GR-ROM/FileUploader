@@ -15,9 +15,13 @@ public class SocketUploader implements Runnable {
     private String tempFilesDirectory;
     private FileChunk fileChunk;
     private final short port;
-    private boolean isUploading;
+    private volatile boolean isUploading;
 
-    public boolean isUploading() {
+    public synchronized void resetUploading(){
+        this.isUploading=false;
+    }
+
+    public synchronized boolean isUploading() {
         return isUploading;
     }
 
@@ -52,8 +56,8 @@ public class SocketUploader implements Runnable {
             int bytesCount = 0;
             int bytesReceived;
             InputStream is = sock.getInputStream();
-            this.isUploading = true;
             while (((bytesReceived = is.read(byteArray)) != -1) || bytesCount == fileChunk.getSize()) {
+                this.isUploading = true;
                 raf.write(byteArray, 0, bytesReceived);
                 bytesCount += bytesReceived;
             }

@@ -25,9 +25,11 @@ public class Watchdog implements Runnable {
             for(Map.Entry<DataConnection, Integer> entry: timeouts.entrySet()){
                 if (entry.getKey().getState()==DataConnection.DATA_CONNECTION_OPENED &&
                 !entry.getKey().getSocketUploader().isUploading()){
+                    entry.getKey().getSocketUploader().resetUploading();
                     entry.setValue(entry.getValue()+1);
-                    if (entry.getValue()==60) {
+                    if (entry.getValue()==10) {
                         dataConnectionPoolService.closeDataConnection(entry.getKey(), true);
+                        System.out.println("Data connection timed out!");
                     }
                 } else {
                     entry.setValue(0);
