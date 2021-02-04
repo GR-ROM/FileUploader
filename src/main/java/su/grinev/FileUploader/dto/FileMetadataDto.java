@@ -1,17 +1,13 @@
 package su.grinev.FileUploader.dto;
 
-import su.grinev.FileUploader.model.FileChunk;
-
-import java.time.LocalDateTime;
-import java.util.List;
-
 public class FileMetadataDto {
 
     private Long size;
     private String displayName;
     private String fileName;
 
-    public FileMetadataDto() {}
+    public FileMetadataDto() {
+    }
 
     public Long getSize() {
         return size;

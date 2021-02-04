@@ -38,4 +38,16 @@ public class FileChunkDto {
     public void setSize(Integer size) {
         this.size = size;
     }
+
+    public void setFileId(Integer fileId) {
+        this.fileId = fileId;
+    }
+
+    public void setHashcode(Integer hashcode) {
+        this.hashcode = hashcode;
+    }
+
+    public void setOffset(Long offset) {
+        this.offset = offset;
+    }
 }

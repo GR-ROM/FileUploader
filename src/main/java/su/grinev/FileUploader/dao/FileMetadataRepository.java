@@ -1,77 +1,49 @@
 package su.grinev.FileUploader.dao;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import su.grinev.FileUploader.jdbc.model.FileMetadata;
-import su.grinev.FileUploader.model.FileChunk;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 public class FileMetadataRepository {
 
-    private int id;
-    private Map<Integer,FileMetadata> fileMetadata;
+    private final AtomicInteger id;
+    private final Map<Integer, FileMetadata> fileMetadata;
 
-    public FileMetadataRepository(){
-        id=0;
-        fileMetadata = new HashMap<>();
+    public FileMetadataRepository() {
+        id=new AtomicInteger();
+        fileMetadata = new ConcurrentHashMap<>();
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public Map<Integer, FileMetadata> getFileMetadata() {
         return fileMetadata;
     }
 
-    public void setFileMetadata(Map<Integer, FileMetadata> fileMetadata) {
-        this.fileMetadata = fileMetadata;
+    public void save(FileMetadata fileMetadata) {
+        fileMetadata.setId(id.incrementAndGet());
+        this.fileMetadata.put(id.get(), fileMetadata);
     }
 
-   /* public void putChunk(FileChunk fileChunk){
-        if (fileMetadata.get(fileChunk.getFileId())!=null) {
-            synchronized (this.fileMetadata) {
-                fileMetadata.get(fileChunk.getFileId()).getFileChunks().add(fileChunk);
-            }
-        }
-    }*/
-
-    public void save(FileMetadata fileMetadata){
-        synchronized (this.fileMetadata){
-            id++;
-            fileMetadata.setId(id);
-            this.fileMetadata.put(id, fileMetadata);
-        }
+    public void update(FileMetadata fileMetadata) {
+        this.fileMetadata.get(fileMetadata.getId()).setAll(fileMetadata);
     }
 
-    public void update(FileMetadata fileMetadata){
-        synchronized (this.fileMetadata){
-            this.fileMetadata.get(fileMetadata.getId()).setAll(fileMetadata);
-        }
+    public FileMetadata findByHash(int hash) {
+        return fileMetadata.values().stream().filter(l -> l.getHash() == hash).findFirst().orElse(null);
     }
 
-    public FileMetadata findByHash(int hash){
-        synchronized (this.fileMetadata) {
-            return fileMetadata.values().stream().filter(l -> l.getHash()==hash).findFirst().orElse(null);
-        }
+    public List<FileMetadata> findAll() {
+        return new ArrayList<>(fileMetadata.values());
     }
 
-    public List<FileMetadata> findAll(){
-        synchronized (this.fileMetadata) {
-            return new ArrayList<>(fileMetadata.values());
-        }
-    }
-
-    public FileMetadata findById(int id){
-        synchronized (this.fileMetadata){
-            return this.fileMetadata.get(id);
-        }
+    public FileMetadata findById(int id) {
+        return this.fileMetadata.get(id);
     }
 
 }

@@ -15,6 +15,7 @@ public class CustomThreadPool  {
     private final ArrayList<Worker> workerList;
     private final CountingSemaphore countingSemaphore;
 
+
     public CustomThreadPool(
             @Value("2") // TO DO: AUTO - get actual number of physical CPU cores!
             int threads) {
@@ -54,7 +55,7 @@ public class CustomThreadPool  {
     }
 
     public void terminateAll(){
-        purgeQueue();
+        this.purgeQueue();
         this.workerList.forEach(t->t.terminateWorker());
         this.workerList.clear();
         this.threadList.clear();
