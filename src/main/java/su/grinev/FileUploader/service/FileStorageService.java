@@ -12,6 +12,7 @@ public class FileStorageService {
     @Value(value = "${TMP_FILES_DIRECTORY}")
     String tempFilesDirectory;
     public FileStorageService(){}
+
     public FileStorageService(String tempFilesDirectory){
         this.tempFilesDirectory=tempFilesDirectory;
     }

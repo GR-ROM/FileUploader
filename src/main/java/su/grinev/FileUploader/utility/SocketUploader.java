@@ -1,18 +1,26 @@
 package su.grinev.FileUploader.utility;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import su.grinev.FileUploader.model.FileChunk;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.stream.Stream;
 
 public class SocketUploader implements Runnable {
 
+    private String tempFilesDirectory;
     private FileChunk fileChunk;
     private RandomAccessFile raf;
     private final short port;
     private boolean isUploading;
     private boolean stop;
+
+    public void setTempFilesDirectory(String tempFilesDirectory){
+        this.tempFilesDirectory=tempFilesDirectory;
+    }
 
     public SocketUploader(FileChunk fileChunk, short port){
         this.fileChunk=fileChunk;
@@ -47,7 +55,7 @@ public class SocketUploader implements Runnable {
         ServerSocket servsock;
         try {
             servsock = new ServerSocket(port);
-            RandomAccessFile raf=new RandomAccessFile(""+fileChunk.getFileId(), "rw");
+            RandomAccessFile raf=new RandomAccessFile(tempFilesDirectory+"/"+fileChunk.getFileId()+".part", "rw");
             raf.seek(fileChunk.getOffset());
             while (!this.stop) {
                 Socket sock = servsock.accept();

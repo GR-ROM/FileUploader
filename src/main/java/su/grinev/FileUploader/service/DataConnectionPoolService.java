@@ -18,6 +18,8 @@ import java.util.stream.Stream;
 @Service
 public class DataConnectionPoolService {
 
+
+    private final String tempFilesDirectory;
     private final List<DataConnection> dataConnectionList;
     private final int maxConcurentConnections;
     private final int lowPort;
@@ -45,11 +47,14 @@ public class DataConnectionPoolService {
                                              int lowPort,
                                      @Value("${DATA_CONNECTIONS_HIGH_PORT}")
                                              int highPort,
+                                     @Value(value = "${TMP_FILES_DIRECTORY}")
+                                             String tempFilesDirectory,
                                      CustomThreadPool customThreadPool){
         this.customThreadPool=customThreadPool;
         this.maxConcurentConnections=maxConcurentConnections;
         this.lowPort = lowPort;
         this.highPort = highPort;
+        this.tempFilesDirectory=tempFilesDirectory;
         dataConnectionList=new ArrayList<>();
         Stream<DataConnection> DataConnectionGenerator = Stream.generate(()
                         ->  (new DataConnection((short)(new Random().nextInt(highPort-lowPort)+lowPort),
@@ -63,16 +68,18 @@ public class DataConnectionPoolService {
         dataConnection.get().getSocketUploader().resetFilePointer();
     }
 
-    public DataConnection openDataConnection(FileChunk fileChunk){
+    public Optional<DataConnection> openDataConnection(FileChunk fileChunk){
         Optional<DataConnection> dataConnection=getClosedDataConnectionFromPool();
         if (!dataConnection.isPresent()) return null;
         // fill connection context and start a thread
         dataConnection.get().setFileChunk(fileChunk);
-        dataConnection.get().setSocketUploader(new SocketUploader(fileChunk, dataConnection.get().getPort()));
+        SocketUploader socketUploader=new SocketUploader(fileChunk, dataConnection.get().getPort());
+        socketUploader.setTempFilesDirectory(this.tempFilesDirectory);
+        dataConnection.get().setSocketUploader(socketUploader);
         dataConnection.get().setState(DataConnection.DATA_CONNECTION_OPENED);
         dataConnection.get().setTask(new TaskWrapper(dataConnection.get().getSocketUploader()));
         customThreadPool.enqueueTask(dataConnection.get().getTask());
-        return dataConnection.get();
+        return dataConnection;
     }
 
     public void closeDataConnectionByPort(int chunkId){
