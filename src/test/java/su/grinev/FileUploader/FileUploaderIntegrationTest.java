@@ -14,7 +14,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import su.grinev.FileUploader.dto.FileChunkDto;
 import su.grinev.FileUploader.dto.FileMetadataDto;
-import sun.misc.IOUtils;
 
 import java.io.*;
 import java.net.Socket;

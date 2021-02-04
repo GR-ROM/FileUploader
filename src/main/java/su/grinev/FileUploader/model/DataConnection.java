@@ -1,5 +1,6 @@
 package su.grinev.FileUploader.model;
 
+import su.grinev.FileUploader.service.DataConnectionPoolService;
 import su.grinev.FileUploader.utility.SocketUploader;
 import su.grinev.FileUploader.utility.TaskWrapper;
 
@@ -12,6 +13,7 @@ public class DataConnection {
     private FileChunk fileChunk;
     private SocketUploader socketUploader;
     private TaskWrapper task;
+    private DataConnectionPoolService dataConnectionPoolService;
 
     public static final int DATA_CONNECTION_OPENED=0;
     public static final int DATA_CONNECTION_CLOSED=DATA_CONNECTION_OPENED+1;

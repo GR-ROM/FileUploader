@@ -104,14 +104,6 @@ public class ChunkedFileUploader {
         return new ResponseEntity<>(dataConnectionProperties, HttpStatus.CREATED);
     }
 
-    @RequestMapping(value = "/files/upload/dataconnection/reset",
-            method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<DataConnectionProperties> updateChunk(@RequestParam Integer chunkId) {
-        if (!isExistingChunkId(chunkId)) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        dataConnectionPoolService.resetDataConnection(chunkId);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
     @RequestMapping(value = "/files/upload/chunk/verify",
             method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DataConnectionProperties> commitChunk(@RequestParam Integer chunkId) {
@@ -120,11 +112,11 @@ public class ChunkedFileUploader {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/files/upload/dataconnection/close",
+    @RequestMapping(value = "/files/upload/dataconnection/cancel",
             method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DataConnectionProperties> closeDataConnection(@RequestParam(required = true) Integer chunkId) {
         if (!isExistingChunkId(chunkId)) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        dataConnectionPoolService.closeDataConnectionByPort(chunkId);
+        dataConnectionPoolService.closeDataConnectionByChunkId(chunkId, true);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
