@@ -81,6 +81,7 @@ public class FileUploaderIntegrationTest {
             os.write(byteArray, 0, bytesReceived);
             bytesCount+=bytesReceived;
         }
+        socket.close();
         System.out.println(""+bytesCount);
         mvcResult = mvc.perform(MockMvcRequestBuilders.post("/files/upload/dataconnection/close")
                 .contentType(MediaType.APPLICATION_JSON)

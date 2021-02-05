@@ -15,9 +15,8 @@ public class CustomThreadPool  {
     private final ArrayList<Worker> workerList;
     private final CountingSemaphore countingSemaphore;
 
-
     public CustomThreadPool(
-            @Value("2") // TO DO: AUTO - get actual number of physical CPU cores!
+            @Value("${MAX_DATA_CONNECTIONS}")
             int threads) {
         if (threads==0) throw new IllegalArgumentException();
         this.tasks=new LinkedBlockingQueue<>();
