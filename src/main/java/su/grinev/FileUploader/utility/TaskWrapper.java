@@ -1,25 +1,26 @@
 package su.grinev.FileUploader.utility;
 
+import java.util.function.Consumer;
+
 public class TaskWrapper {
 
     private Runnable task;
-    private Worker worker;
+    private WorkerCallback workerCallback;
 
     public TaskWrapper(Runnable task) {
         this.task = task;
-        this.worker=null;
+        this.workerCallback=null;
     }
 
-    public void setWorker(Worker worker) {
-        this.worker = worker;
+    public void setWorkerCallback(WorkerCallback workerCallback){
+        this.workerCallback=workerCallback;
     }
 
     public Runnable getTask() {
         return task;
     }
 
-
     public void cancel(){
-        if (worker!=null) worker.terminateTask(this);
+        workerCallback.cancel(this);
     }
 }
