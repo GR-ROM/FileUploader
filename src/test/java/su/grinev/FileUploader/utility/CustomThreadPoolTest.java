@@ -12,13 +12,14 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.Future;
 import java.util.stream.IntStream;
 
 public class CustomThreadPoolTest {
 
     private CustomThreadPool threadPool;
     private List<Runnable> testTask;
-    private final int max_task = 1000;
+    private final int max_task = 2048;
     private final int max_timeout_sec = 10;
 
     @BeforeEach
@@ -46,8 +47,7 @@ public class CustomThreadPoolTest {
     public void shouldStartAndComplete10TasksWithDifferentNumberOfThreads(int threads) throws InterruptedException {
         threadPool = new CustomThreadPool(threads);
         Long time = System.currentTimeMillis();
-        threadPool.startExecutor();
-        testTask.forEach(t -> threadPool.enqueueTask(new TaskWrapper(t)));
+        testTask.forEach(t -> threadPool.submit(t));
         Assertions.assertTimeout(Duration.ofSeconds(max_timeout_sec), () -> threadPool.waitForComplete());
         System.out.println("All done in " + (System.currentTimeMillis() - time) + " ms");
     }
@@ -61,13 +61,30 @@ public class CustomThreadPoolTest {
     }
 
     @Test
+    public void shouldStartAndTerminateAllWorkersNewThread() {
+        List<Thread> threadList=new ArrayList<>();
+        testTask.forEach(t -> {
+            Thread pthread=new Thread(t);
+            pthread.start();
+            threadList.add(pthread);
+        });
+        threadList.forEach(t->{
+            try {
+                t.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    @Test
     public void shouldFireIllegalArgumentExceptionInCaseOfZeroThreads() {
         Assertions.assertThrows(IllegalArgumentException.class, () -> threadPool = new CustomThreadPool(0));
     }
 
     private static List<Arguments> provideNumberOfThreads() {
         List<Arguments> args = new ArrayList<>();
-        IntStream.iterate(1, i -> i * 2).limit(6).forEach(t -> args.add(Arguments.of(t)));
+        IntStream.iterate(1, i -> i * 2).limit(12).forEach(t -> args.add(Arguments.of(t)));
         return args;
     }
 }

@@ -15,7 +15,9 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import su.grinev.FileUploader.dto.FileChunkDto;
 import su.grinev.FileUploader.dto.FileMetadataDto;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.OutputStream;
 import java.net.Socket;
 
 @SpringBootTest
@@ -83,11 +85,6 @@ public class FileUploaderIntegrationTest {
         }
         socket.close();
         System.out.println(""+bytesCount);
-        mvcResult = mvc.perform(MockMvcRequestBuilders.post("/files/upload/dataconnection/close")
-                .contentType(MediaType.APPLICATION_JSON)
-                .param("chunkId", String.valueOf(chunkId)))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andReturn();
     }
 
     @Test

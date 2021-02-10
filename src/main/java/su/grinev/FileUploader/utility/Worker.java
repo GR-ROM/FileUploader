@@ -1,6 +1,7 @@
 package su.grinev.FileUploader.utility;
 
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Worker implements Runnable {
 
@@ -9,15 +10,30 @@ public class Worker implements Runnable {
     private volatile boolean stop;
     private CountingSemaphore countingSemaphore;
     private TaskWrapper currentTask;
+    private AtomicBoolean allowConsume;
 
     public Worker(BlockingQueue<TaskWrapper> taskList, CountingSemaphore countingSemaphore){
         this.taskList=taskList;
         this.countingSemaphore=countingSemaphore;
         this.stop=false;
+        this.allowConsume=new AtomicBoolean();
+        this.allowConsume.set(true);
+    }
+
+    public void stopConsume(){
+        this.allowConsume.set(false);
+    }
+
+    public void continueConsume(){
+        this.allowConsume.set(true);
     }
 
     public void setThread(Thread thread) {
         this.thread = thread;
+    }
+
+    public TaskWrapper getCurrentTask() {
+        return currentTask;
     }
 
     public synchronized void terminateWorker(){
@@ -25,23 +41,23 @@ public class Worker implements Runnable {
         thread.interrupt();
     }
 
-    public synchronized void terminateTask(TaskWrapper taskWrapper){
-        if (taskList.contains(taskWrapper)){
-            taskList.remove(taskWrapper);
-        } else {
-            if (taskWrapper.equals(currentTask)) this.thread.interrupt();
-        }
-    }
-
     @Override
     public void run() {
         while (!stop){
             try {
-                currentTask=taskList.take();
-                currentTask.setWorker(this);
-                currentTask.getTask().run();
-                this.countingSemaphore.countDown();
+                if (allowConsume.get()) {
+                    currentTask = taskList.take();
+                    currentTask.setWorkerThread(this.thread);
+                    currentTask.setRunningState();
+                    currentTask.getTask().run();
+                    currentTask.setDoneState();
+                    currentTask.setWorkerThread(null);
+                    this.countingSemaphore.countDown();
+                } else {
+                    Thread.yield();
+                }
             } catch (InterruptedException e) {
+                currentTask.setCancelledState();
                 System.out.println("Interrupted exception");
             }
         }

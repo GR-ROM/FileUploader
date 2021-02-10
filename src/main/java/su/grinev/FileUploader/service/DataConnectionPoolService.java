@@ -90,7 +90,7 @@ public class DataConnectionPoolService {
 
     public synchronized void closeDataConnection(DataConnection dataConnection, boolean forceStopThread){
         if (forceStopThread)
-            dataConnection.getTask().cancel();
+            dataConnection.getTask().cancel(true);
         // clear connection context
         dataConnection.setSocketUploader(null);
         dataConnection.setTask(null);
