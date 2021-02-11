@@ -19,14 +19,13 @@ public class CustomFixedThreadPoolTest {
 
     private CustomFixedThreadPool threadPool;
     private List<Runnable> testTask;
-    private final int max_task = 2048;
     private final int max_timeout_sec = 10;
 
     @BeforeEach
     public void initialize() {
         testTask = new ArrayList<>();
+        int max_task = 4096;
         for (int i = 0; i != max_task; i++) {
-            int finalI = i;
             Random rnd=new Random();
             testTask.add(() -> {
                 int a = 10000;
@@ -35,7 +34,7 @@ public class CustomFixedThreadPoolTest {
                     t=rnd.nextInt(65535);
                     b=+t*t;
                 }
-                b= (int) Math.sqrt(b/a);
+                b= (int) Math.sqrt((float)b/a);
                 String.valueOf(b);
             });
         }
@@ -44,14 +43,13 @@ public class CustomFixedThreadPoolTest {
     @DisplayName("Should start and complete 10 tasks with different number of threads")
     @ParameterizedTest
     @MethodSource("provideNumberOfThreads")
-    public void shouldStartAndComplete10TasksWithDifferentNumberOfThreads(int threads) throws InterruptedException {
+    public void shouldStartAndComplete10TasksWithDifferentNumberOfThreads(int threads) {
         threadPool = new CustomFixedThreadPool(threads);
-        Long time = System.currentTimeMillis();
         testTask.forEach(t -> threadPool.submit(t));
         threadPool.shutdown();
-        Assertions.assertTimeout(Duration.ofSeconds(max_timeout_sec), () -> threadPool.awaitTermination(120, TimeUnit.SECONDS));
-        threadPool.shutdownNow();
-        System.out.println("All done in " + (System.currentTimeMillis() - time) + " ms");
+        Assertions.assertTimeout(Duration.ofSeconds(max_timeout_sec), () -> {
+            if (!threadPool.awaitTermination(20, TimeUnit.SECONDS)) threadPool.shutdownNow();
+        });
     }
 
     @ParameterizedTest
@@ -88,7 +86,7 @@ public class CustomFixedThreadPoolTest {
 
     private static List<Arguments> provideNumberOfThreads() {
         List<Arguments> args = new ArrayList<>();
-        IntStream.iterate(1, i -> i * 2).limit(12).forEach(t -> args.add(Arguments.of(t)));
+        IntStream.iterate(1, i -> i * 2).limit(13).forEach(t -> args.add(Arguments.of(t)));
         return args;
     }
 }
