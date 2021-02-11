@@ -12,12 +12,12 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
-public class CustomThreadPoolTest {
+public class CustomFixedThreadPoolTest {
 
-    private CustomThreadPool threadPool;
+    private CustomFixedThreadPool threadPool;
     private List<Runnable> testTask;
     private final int max_task = 2048;
     private final int max_timeout_sec = 10;
@@ -45,17 +45,17 @@ public class CustomThreadPoolTest {
     @ParameterizedTest
     @MethodSource("provideNumberOfThreads")
     public void shouldStartAndComplete10TasksWithDifferentNumberOfThreads(int threads) throws InterruptedException {
-        threadPool = new CustomThreadPool(threads);
+        threadPool = new CustomFixedThreadPool(threads);
         Long time = System.currentTimeMillis();
         testTask.forEach(t -> threadPool.submit(t));
-        Assertions.assertTimeout(Duration.ofSeconds(max_timeout_sec), () -> threadPool.waitForComplete());
+        Assertions.assertTimeout(Duration.ofSeconds(max_timeout_sec), () -> threadPool.awaitTermination(120, TimeUnit.SECONDS));
         System.out.println("All done in " + (System.currentTimeMillis() - time) + " ms");
     }
 
     @ParameterizedTest
     @MethodSource("provideNumberOfThreads")
     public void shouldStartAndTerminateAllWorkers(int threads) {
-        threadPool = new CustomThreadPool(threads);
+        threadPool = new CustomFixedThreadPool(threads);
         testTask.forEach(t -> threadPool.enqueueTask(new TaskWrapper(t)));
         Assertions.assertTimeout(Duration.ofSeconds(2), () -> threadPool.terminateAll());
     }
@@ -79,7 +79,7 @@ public class CustomThreadPoolTest {
 
     @Test
     public void shouldFireIllegalArgumentExceptionInCaseOfZeroThreads() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> threadPool = new CustomThreadPool(0));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> threadPool = new CustomFixedThreadPool(0));
     }
 
     private static List<Arguments> provideNumberOfThreads() {

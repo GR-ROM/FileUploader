@@ -1,6 +1,9 @@
 package su.grinev.FileUploader.utility;
 
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class TaskWrapper implements Future {
 
@@ -13,6 +16,11 @@ public class TaskWrapper implements Future {
     public final static int RUNNING=2;
     public final static int DONE=3;
     public final static int CANCELLED=4;
+
+    public TaskWrapper(Runnable task, Object T){
+        this(task);
+        this.T=T;
+    }
 
     public TaskWrapper(Runnable task) {
         this.task = task;
@@ -52,21 +60,19 @@ public class TaskWrapper implements Future {
 
     @Override
     public boolean cancel(boolean mayInterruptIfRunning) {
-        if (workerThread ==null) return false;
-        if (mayInterruptIfRunning) workerThread.interrupt();
+        if (workerThread == null) return false;
+        if (mayInterruptIfRunning && this.state == RUNNING) workerThread.interrupt();
         return true;
     }
 
     @Override
     public boolean isCancelled() {
-        if (state==CANCELLED) return true;
-        return false;
+        return state == CANCELLED;
     }
 
     @Override
     public boolean isDone() {
-        if (state==DONE) return true;
-        return false;
+        return state == DONE;
     }
 
     @Override

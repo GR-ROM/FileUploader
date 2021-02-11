@@ -8,7 +8,7 @@ import java.util.Objects;
 
 public class DataConnection {
 
-    private short port;
+    private final short port;
     private int state;
     private FileChunk fileChunk;
     private SocketUploader socketUploader;

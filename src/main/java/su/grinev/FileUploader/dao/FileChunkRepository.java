@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 public class FileChunkRepository {
 
     private final AtomicInteger id;
-    private Map<Integer, FileChunk> fileChunkMap;
+    private final Map<Integer, FileChunk> fileChunkMap;
 
     public FileChunkRepository(){
         id=new AtomicInteger();

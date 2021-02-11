@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class CountingSemaphore {
 
-    private AtomicInteger counter;
+    private final AtomicInteger counter;
 
     public CountingSemaphore(){
         counter=new AtomicInteger();

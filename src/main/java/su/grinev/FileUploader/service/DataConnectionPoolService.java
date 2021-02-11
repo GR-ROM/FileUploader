@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import su.grinev.FileUploader.model.DataConnection;
 import su.grinev.FileUploader.model.FileChunk;
-import su.grinev.FileUploader.utility.CustomThreadPool;
+import su.grinev.FileUploader.utility.CustomFixedThreadPool;
 import su.grinev.FileUploader.utility.SocketUploader;
 import su.grinev.FileUploader.utility.TaskWrapper;
 import su.grinev.FileUploader.utility.Watchdog;
@@ -26,7 +26,7 @@ public class DataConnectionPoolService {
     private final int maxConcurentConnections;
     private final int lowPort;
     private final int highPort;
-    private final CustomThreadPool customThreadPool;
+    private final CustomFixedThreadPool customFixedThreadPool;
 
     private Optional<DataConnection> getDataConnectionByFileChunkId(int chunkId) {
         return dataConnectionList
@@ -51,8 +51,8 @@ public class DataConnectionPoolService {
                                              int highPort,
                                      @Value(value = "${TMP_FILES_DIRECTORY}")
                                              String tempFilesDirectory,
-                                     CustomThreadPool customThreadPool) {
-        this.customThreadPool = customThreadPool;
+                                     CustomFixedThreadPool customFixedThreadPool) {
+        this.customFixedThreadPool = customFixedThreadPool;
         this.maxConcurentConnections = maxConcurentConnections;
         this.lowPort = lowPort;
         this.highPort = highPort;
@@ -77,7 +77,7 @@ public class DataConnectionPoolService {
         dataConnection.get().setSocketUploader(socketUploader);
         dataConnection.get().setState(DataConnection.DATA_CONNECTION_OPENED);
         dataConnection.get().setTask(new TaskWrapper(dataConnection.get().getSocketUploader()));
-        customThreadPool.enqueueTask(dataConnection.get().getTask());
+        customFixedThreadPool.enqueueTask(dataConnection.get().getTask());
         return dataConnection;
     }
 
