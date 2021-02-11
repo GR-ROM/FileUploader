@@ -17,16 +17,13 @@ public class Worker implements Runnable {
         this.taskList = taskList;
         this.countingSemaphore = countingSemaphore;
         this.stop = false;
-        this.currentTask=null;
+        this.currentTask = null;
         this.allowConsume = new AtomicBoolean();
         this.allowConsume.set(true);
     }
 
     public void setThread(Thread thread) {
         this.thread = thread;
-    }
-
-    public void start() {
         this.thread.start();
     }
 
@@ -42,32 +39,35 @@ public class Worker implements Runnable {
         return currentTask;
     }
 
-    public synchronized void terminateWorker(){
-        stop=true;
-        thread.interrupt();
+    public synchronized void shutdown(boolean withInterruption) {
+        stop = true;
+        if (withInterruption) thread.interrupt();
     }
 
     @Override
     public void run() {
-        while (!stop){
+        countingSemaphore.countUp();
+        while (!stop) {
             try {
-                if (allowConsume.get()) {
+                if (allowConsume.get() && taskList.size() > 0) {
                     this.currentTask = taskList.take();
                     this.currentTask.setWorkerThread(this.thread);
                     this.currentTask.setRunningState();
                     this.currentTask.getTask().run();
                     this.currentTask.setWorkerThread(null);
                     this.currentTask.setDoneState();
-                    this.currentTask=null;
-                    this.countingSemaphore.countDown();
+                    this.currentTask = null;
                 } else {
                     Thread.yield();
                 }
             } catch (InterruptedException e) {
-                if (this.currentTask!=null) this.currentTask.setCancelledState();
+                if (this.currentTask != null) {
+                    this.currentTask.setCancelledState();
+                    this.currentTask = null;
+                }
                 System.out.println("Interrupted exception");
             }
         }
-
+        this.countingSemaphore.countDown();
     }
 }

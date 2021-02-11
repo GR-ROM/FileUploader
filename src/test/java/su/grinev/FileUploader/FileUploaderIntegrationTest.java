@@ -30,6 +30,14 @@ public class FileUploaderIntegrationTest {
     private FileMetadataDto fileMetadataDto;
     private FileChunkDto fileChunkDto;
 
+    public static String asJsonString(final Object obj) {
+        try {
+            return new ObjectMapper().writeValueAsString(obj);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @BeforeEach
     public void initTest() {
         this.fileMetadataDto = new FileMetadataDto();
@@ -106,14 +114,6 @@ public class FileUploaderIntegrationTest {
         int chunkId = JsonPath.parse(mvcResult.getResponse().getContentAsString()).read("$.chunkId");
         int dataPort = JsonPath.parse(mvcResult.getResponse().getContentAsString()).read("$.dataPort");
         Thread.sleep(20000);
-    }
-
-    public static String asJsonString(final Object obj) {
-        try {
-            return new ObjectMapper().writeValueAsString(obj);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
 }

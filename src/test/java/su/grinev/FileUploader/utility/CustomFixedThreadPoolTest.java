@@ -48,7 +48,9 @@ public class CustomFixedThreadPoolTest {
         threadPool = new CustomFixedThreadPool(threads);
         Long time = System.currentTimeMillis();
         testTask.forEach(t -> threadPool.submit(t));
+        threadPool.shutdown();
         Assertions.assertTimeout(Duration.ofSeconds(max_timeout_sec), () -> threadPool.awaitTermination(120, TimeUnit.SECONDS));
+        threadPool.shutdownNow();
         System.out.println("All done in " + (System.currentTimeMillis() - time) + " ms");
     }
 
@@ -57,7 +59,9 @@ public class CustomFixedThreadPoolTest {
     public void shouldStartAndTerminateAllWorkers(int threads) {
         threadPool = new CustomFixedThreadPool(threads);
         testTask.forEach(t -> threadPool.enqueueTask(new TaskWrapper(t)));
-        Assertions.assertTimeout(Duration.ofSeconds(2), () -> threadPool.terminateAll());
+        threadPool.shutdown();
+        threadPool.awaitTermination(1, TimeUnit.MILLISECONDS);
+        Assertions.assertTimeout(Duration.ofSeconds(2), () -> threadPool.shutdownNow());
     }
 
     @Test

@@ -2,8 +2,6 @@ package su.grinev.FileUploader.utility;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -28,17 +26,10 @@ public class CustomFixedThreadPool implements ExecutorService {
             worker.setThread(new Thread(worker));
             workerList.add(worker);
         }
-        try {
-            workerList.forEach(t -> t.start());
-        }
-        catch (IllegalThreadStateException e){
-            System.out.println(e.toString());
-        }
     }
 
     public void enqueueTask(TaskWrapper task){
         try {
-            countingSemaphore.countUp();
             task.setQueuedState();
             tasks.put(task);
         } catch (InterruptedException e) {
@@ -46,26 +37,19 @@ public class CustomFixedThreadPool implements ExecutorService {
         }
     }
 
-    public void terminateAll(){
-        this.purgeQueue();
-        this.workerList.forEach(t->t.terminateWorker());
-        this.workerList.clear();
-    }
-
-    public void purgeQueue(){
-        tasks.clear();
-    }
-
     @Override
     public void shutdown() {
-
+            this.workerList.forEach(t->{
+                t.stopConsume();
+                t.shutdown(false);
+            });
     }
 
     @Override
     public List<Runnable> shutdownNow() {
         this.workerList.forEach(t->{
             t.stopConsume();
-            t.terminateWorker();
+            t.shutdown(true);
         });
         List<Runnable> result=new ArrayList<>();
         this.tasks.forEach(t->result.add(t.getTask()));
@@ -75,12 +59,12 @@ public class CustomFixedThreadPool implements ExecutorService {
 
     @Override
     public boolean isShutdown() {
-        throw new NotImplementedException();
+        return false;
     }
 
     @Override
     public boolean isTerminated() {
-        throw new NotImplementedException();
+        return false;
     }
 
     @Override
@@ -96,7 +80,7 @@ public class CustomFixedThreadPool implements ExecutorService {
 
     @Override
     public <T> Future<T> submit(Callable<T> task) {
-        throw new NotImplementedException();
+        return null;
     }
 
     @Override
@@ -115,22 +99,22 @@ public class CustomFixedThreadPool implements ExecutorService {
 
     @Override
     public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks) throws InterruptedException {
-        throw new NotImplementedException();
+        return null;
     }
 
     @Override
     public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit) throws InterruptedException {
-        throw new NotImplementedException();
+        return null;
     }
 
     @Override
     public <T> T invokeAny(Collection<? extends Callable<T>> tasks) throws InterruptedException, ExecutionException {
-        throw new NotImplementedException();
+        return null;
     }
 
     @Override
     public <T> T invokeAny(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
-        throw new NotImplementedException();
+        return null;
     }
 
     @Override
