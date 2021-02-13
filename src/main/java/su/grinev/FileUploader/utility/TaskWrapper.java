@@ -8,6 +8,7 @@ import java.util.concurrent.TimeoutException;
 public class TaskWrapper implements Future {
 
     private final Runnable task;
+    private CountingSemaphore semaphore;
     private Object T;
     private Thread workerThread;
     private int state;
@@ -24,6 +25,7 @@ public class TaskWrapper implements Future {
 
     public TaskWrapper(Runnable task) {
         this.task = task;
+        this.semaphore=new CountingSemaphore();
         this.workerThread =null;
         this.state=CREATED;
     }
@@ -41,12 +43,14 @@ public class TaskWrapper implements Future {
     public void setRunningState(){
         if (this.state==QUEUED){
             this.state=RUNNING;
+            this.semaphore.countUp();
         } else throw new IllegalStateException();
     }
 
     public void setDoneState(){
         if (this.state==RUNNING){
             this.state=DONE;
+            this.semaphore.countDown();
         } else throw new IllegalStateException();
     }
 
@@ -61,7 +65,11 @@ public class TaskWrapper implements Future {
     @Override
     public boolean cancel(boolean mayInterruptIfRunning) {
         if (workerThread == null) return false;
-        if (mayInterruptIfRunning && this.state == RUNNING) workerThread.interrupt();
+        if (mayInterruptIfRunning && this.state == RUNNING){
+            workerThread.interrupt();
+            this.semaphore.countDown();
+            this.state=CANCELLED;
+        }
         return true;
     }
 
@@ -77,13 +85,13 @@ public class TaskWrapper implements Future {
 
     @Override
     public Object get() throws InterruptedException, ExecutionException {
-        workerThread.join();
+        this.semaphore.await();
         return this.T;
     }
 
     @Override
     public Object get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
-        workerThread.join(unit.toMillis(timeout));
+        this.semaphore.await(timeout, unit);
         return this.T;
     }
 }

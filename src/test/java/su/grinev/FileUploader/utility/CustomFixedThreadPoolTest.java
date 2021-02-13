@@ -1,5 +1,6 @@
 package su.grinev.FileUploader.utility;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -12,6 +13,8 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
@@ -38,6 +41,18 @@ public class CustomFixedThreadPoolTest {
                 String.valueOf(b);
             });
         }
+    }
+
+    @DisplayName("Should wait until task is done")
+    @Test
+    public void shouldStartAndComplete1Task() throws ExecutionException, InterruptedException {
+        threadPool = new CustomFixedThreadPool(1);
+        Future f=threadPool.submit(testTask.get(0));
+        Assertions.assertTimeout(Duration.ofSeconds(max_timeout_sec), () -> f.get());
+        threadPool.shutdown();
+        Assertions.assertTimeout(Duration.ofSeconds(max_timeout_sec), () -> {
+            if (!threadPool.awaitTermination(max_timeout_sec, TimeUnit.SECONDS)) threadPool.shutdownNow();
+        });
     }
 
     @DisplayName("Should start and complete 10 tasks with different number of threads")

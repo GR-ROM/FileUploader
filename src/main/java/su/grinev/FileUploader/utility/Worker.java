@@ -56,6 +56,9 @@ public class Worker implements Runnable {
                     this.currentTask.getTask().run();
                     this.currentTask.setWorkerThread(null);
                     this.currentTask.setDoneState();
+                    synchronized (this.currentTask){
+                        this.currentTask.notify();
+                    }
                     this.currentTask = null;
                 } else {
                     Thread.yield();
